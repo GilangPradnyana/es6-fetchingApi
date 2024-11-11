@@ -1,0 +1,58 @@
+const contaier = document.querySelector('.container')
+$.ajax({
+    url: 'http://www.omdbapi.com/?apikey=f4318b55&s=avengers',
+    success: result => {
+        const movies = result.Search
+        const categories = movies.map((items)=> {
+            return `<div class="row">
+            <div class="col-md-4 my-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="${items.Poster}" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">${items.Title}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">${items.Year}</h6>
+                      <a href="#" class="btn btn-primary modal-detail-button" data-toggle="modal" data-target="#MovieDetailModal" data-imdbid='${items.imdbID}' >Show Details</a>
+                    </div>
+                  </div>
+            </div>
+        </div>`
+        }).join('')
+        $('.movie-container').html(categories)
+        // console.log(categories)
+        // ketika button di-click
+        $('.modal-detail-button').on('click', function() {
+            // using Ajax
+            $.ajax({
+                url: 'http://www.omdbapi.com/?apikey=f4318b55&i=' + $(this).data('imdbid'),
+                success: items => {
+                    console.log(items)
+                    const movieDetail = `<div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <img src="${items.Poster}" class="img-fluid">
+                                        </div>
+                                        <div class="col-md">
+                                            <ul class="list-group">
+                                                <li class="list-group-item">${items.Title}(2016)</li>
+                                                <li class="list-group-item"><strong>Director : </strong>${items.Director}</li>
+                                                <li class="list-group-item"><strong>Actors : </strong>${items.Actors}</li>
+                                                <li class="list-group-item"><strong>Writter : </strong>${items.Writer}</li>
+                                                <li class="list-group-item"><strong>Plot : </strong> <br> ${items.Plot}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>`
+                    
+                    // replace the list
+                    $('.modal-body').html(movieDetail)
+                },
+                error: e => console.log(e.responseText)
+
+            })
+        })
+
+    },
+
+    error: e => console.log(e.responseText)
+})
